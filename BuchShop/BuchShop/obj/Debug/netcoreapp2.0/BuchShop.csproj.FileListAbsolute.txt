@@ -1,0 +1,11 @@
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\bin\Debug\netcoreapp2.0\BuchShop.deps.json
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\bin\Debug\netcoreapp2.0\BuchShop.runtimeconfig.json
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\bin\Debug\netcoreapp2.0\BuchShop.runtimeconfig.dev.json
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\bin\Debug\netcoreapp2.0\BuchShop.dll
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\obj\Debug\netcoreapp2.0\BuchShop.csprojResolveAssemblyReference.cache
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\obj\Debug\netcoreapp2.0\BuchShop.csproj.CoreCompileInputs.cache
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\obj\Debug\netcoreapp2.0\BuchShop.AssemblyInfoInputs.cache
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\obj\Debug\netcoreapp2.0\BuchShop.AssemblyInfo.cs
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\bin\Debug\netcoreapp2.0\BuchShop.pdb
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\obj\Debug\netcoreapp2.0\BuchShop.dll
+C:\Users\jakob\Eigene Entwicklung\Informatikprojekt\BuchShopMVC\BuchShop\BuchShop\obj\Debug\netcoreapp2.0\BuchShop.pdb
