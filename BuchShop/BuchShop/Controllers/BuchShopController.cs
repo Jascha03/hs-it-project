@@ -96,7 +96,19 @@ namespace BuchShop.Controllers
         public IActionResult Artikeldetails(int artikelnummer)
         {
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
-            return View();
+
+            if(artikel is Buch)
+            {
+                ViewData["Autor"] = ((Buch)artikel).Autor;
+                ViewData["Autor"] = ((Buch)artikel).Zusammenfassung;
+            }
+            else if(artikel is BluRay)
+            {
+                ViewData["Autor"] = ((BluRay)artikel).Regisseur;
+                ViewData["Autor"] = ((BluRay)artikel).TrailerLink;
+            }
+
+            return View(artikel);
         }
 
         public IActionResult Warenkorbansicht()
