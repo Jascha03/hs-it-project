@@ -44,7 +44,7 @@
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Anzahl: </label>
-                <label style="color:grey;">@Model.Anzahl</label>
+                <label style="color:blue;">@Model.Anzahl</label>
             </h4>
         </div>
         @if (Model is BluRay)
@@ -63,7 +63,7 @@
                     <label style="color:blue;">@((Model as Buch).Autor)</label>
                 </h4>
                 <h4>
-                    <label style="width:200px">Beschreibung: </label>
+                    <label style="width:200px">Zusammenfassung: </label>
                     <label style="color:blue;">@((Model as Buch).Zusammenfassung)</label>
                 </h4>
             </div>
