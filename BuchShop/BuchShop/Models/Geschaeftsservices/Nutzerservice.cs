@@ -11,11 +11,11 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
     public sealed class Nutzerservice : INutzerservice
     {
 
-        private IDatenbankZugriff datenbank;
+        private IDatenbankZugriff _datenbank;
 
-        public Nutzerservice(IDatenbankZugriff _datenbank)
+        public Nutzerservice(IDatenbankZugriff datenbank)
         {
-            datenbank = _datenbank;
+            _datenbank = datenbank;
         }
         
 
@@ -29,13 +29,13 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
             string passwortHash = ascienc.GetString(sha1data);
             */
 
-            return passwort == (string) datenbank.GetNutzerDatenByNutzerId(identifikationsnummer)["Passwort"];
+            return passwort == (string) _datenbank.GetNutzerDatenByNutzerId(identifikationsnummer)["Passwort"];
         }
 
         public Nutzer GetNutzerByNutzerId(int identifikationsnummer)
         {
             Nutzer nutzer;
-            DataRow nutzerDaten = datenbank.GetNutzerDatenByNutzerId(identifikationsnummer);
+            DataRow nutzerDaten = _datenbank.GetNutzerDatenByNutzerId(identifikationsnummer);
 
             if ((string) nutzerDaten["Nutzertyp"] == Nutzertyp.Kunde.ToString())
             {
@@ -71,13 +71,13 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
         public int GetNutzerIdentifikationsnummerByEmail(string email)
         {
-            return datenbank.GetNutzerIdentifikationsnummerByEmail(email);
+            return _datenbank.GetNutzerIdentifikationsnummerByEmail(email);
         }
 
         public Collection<Kunde> SucheKundenByName(string name)
         {
             Collection<Kunde> kundenListe = new Collection<Kunde>();
-            Collection<int> kundenIdentifikationsnummern = datenbank.SucheKundenIdentifikationsnummernByName(name);
+            Collection<int> kundenIdentifikationsnummern = _datenbank.SucheKundenIdentifikationsnummernByName(name);
 
             foreach (int id in kundenIdentifikationsnummern)
             {
@@ -98,8 +98,8 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
         public void KundenDatenSpeichern(Kunde kunde)
         {
-            datenbank.SetKundenStatus(kunde.Identifikationsnummer, kunde.Status.ToString());
-            datenbank.SetKundenTreuepunkte(kunde.Identifikationsnummer, kunde.Treuepunkte);
+            _datenbank.SetKundenStatus(kunde.Identifikationsnummer, kunde.Status.ToString());
+            _datenbank.SetKundenTreuepunkte(kunde.Identifikationsnummer, kunde.Treuepunkte);
         }
 
         public decimal WertEinesTreuepunktsInEuro()
@@ -116,7 +116,7 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
         public void SetDatenbankZugriff(IDatenbankZugriff datenbankZugriff)
         {
-            datenbank = datenbankZugriff;
+            _datenbank = datenbankZugriff;
         }
     }
 }

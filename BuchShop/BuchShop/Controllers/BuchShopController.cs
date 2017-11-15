@@ -59,7 +59,7 @@ namespace BuchShop.Controllers
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                Response.Redirect("Login", true);
+                return View("Login");
             }
             Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
             if (nutzer is Kunde)
@@ -78,7 +78,38 @@ namespace BuchShop.Controllers
             return View("Startseite", nutzer);
         }
 
-        public IActionResult Artikelsuche()
+        public IActionResult Artikelsuche(string artikelName, bool checkboxBuch, bool checkboxBlueRay)
+        {
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+            if (string.IsNullOrEmpty(value))
+            {
+                Response.Redirect("Login", true);
+            }
+            if (!string.IsNullOrEmpty(artikelName))
+            {
+                System.Collections.ObjectModel.Collection<Artikel> artikelListe = _bestellservice.SucheArtikelByTitel(artikelName, checkboxBuch, checkboxBlueRay);
+                ViewData["artikel"] = artikelListe;
+            }
+            return View();
+        }
+
+        public IActionResult Artikeldetails(int artikelnummer)
+        {
+            Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
+            return View();
+        }
+
+        public IActionResult Warenkorbansicht()
+        {
+            return View();
+        }
+
+        public IActionResult Kundensuche()
+        {
+            return View();
+        }
+
+        public IActionResult Bestellstatistik()
         {
             return View();
         }

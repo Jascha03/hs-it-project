@@ -38,6 +38,8 @@ namespace BuchShop
             services.AddSingleton<INutzerservice, Nutzerservice>();
             services.AddSingleton<IBestellservice, Bestellservice>();
             services.AddSingleton<IDatenbankZugriff, DatenbankZugriffFake>();
+            services.AddSingleton<ILogistiksystemZugriff, LogistiksystemZugriffFake>();
+            services.AddSingleton<IRechnungssystemZugriff, RechnungssystemAdapter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

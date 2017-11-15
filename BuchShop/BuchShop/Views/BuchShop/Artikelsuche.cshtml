@@ -1,0 +1,64 @@
+﻿@model BuchShop.Geschaeftslogik.Domaenenobjekte.Artikel
+@{
+    ViewData["Title"] = "Artikelsuche";
+}
+
+<h2>@ViewData["Title"]</h2>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <form asp-action="Artikelsuche" method="get">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Titel" class="control-label"></label>
+            <input asp-for="Titel" class="form-control" name="artikelName"/>
+            <span asp-validation-for="Titel" class="text-danger"></span>
+        </div>
+        <div classs="form-group">
+            <input name="checkboxBuch" value="true" type="checkbox" />
+            <label class="control-label">Buch</label>
+            <br />
+            <input name="checkboxBlueRay" value="true" type="checkbox" />
+            <label class="control-label">Blue Ray</label>
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="submit" value="Suchen" class="btn btn-default" />
+        </div>
+        @if (ViewData.ContainsKey("artikel"))
+        {
+            <div class="panel-body">
+                <table id="assets-data-table" 
+
+                class="table table-striped table-bordered" 
+
+                 style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Titel</th>
+                            <th>Typ</th>
+                            <th>Preis in €</th>
+                        </tr>
+                    </thead>
+                    <tbody>                        
+                        @foreach (var artikel in (System.Collections.ObjectModel.Collection
+                        <BuchShop.Geschaeftslogik.Domaenenobjekte.Artikel>
+                            )ViewData["artikel"] )
+                            {
+                            <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "BuchShop", new { artikelnummer = artikel.Artikelnummer }))'">
+                                <td>@artikel.Titel</td>
+                                <td>@artikel.Typ</td>
+                                <td>@artikel.Preis</td>
+                            </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </form>
+</body>
+</html>

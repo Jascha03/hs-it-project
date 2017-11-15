@@ -9,19 +9,24 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 {
     public sealed class Bestellservice : IBestellservice
     {
-        private readonly INutzerservice nutzerservice;
+        private readonly INutzerservice _nutzerservice;
 
         
 
-        private ILogistiksystemZugriff logistiksystem;
-        private IRechnungssystemZugriff rechnungssystem;
+        private readonly ILogistiksystemZugriff _logistiksystem;
+        private readonly IRechnungssystemZugriff _rechnungssystem;
         
         private Dictionary<int, Warenkorb> warenkorbDictionary = new Dictionary<int, Warenkorb>();
         
-        public Bestellservice(INutzerservice _nutzerservice)
+        public Bestellservice(
+            INutzerservice nutzerservice, ILogistiksystemZugriff logistiksystem, 
+            IRechnungssystemZugriff rechnungssystem)
         {
-            nutzerservice = _nutzerservice;
-            Collection<Kunde> alleKunden = nutzerservice.SucheKundenByName("");
+            _nutzerservice = nutzerservice;
+            _logistiksystem = logistiksystem;
+            _rechnungssystem = rechnungssystem;
+
+            Collection<Kunde> alleKunden = _nutzerservice.SucheKundenByName("");
 
             foreach(Kunde kunde in alleKunden)
             {
@@ -55,21 +60,21 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
         public int AnzahlBestellungen()
         {
-            return logistiksystem.AnzahlBestellungen();
+            return _logistiksystem.AnzahlBestellungen();
         }
 
         public int AnzahlUnterschiedlicheArtikelInLogistiksystem()
         {
-            return logistiksystem.AnzahlUnterschiedlicheArtikel();
+            return _logistiksystem.AnzahlUnterschiedlicheArtikel();
         }
 
         public decimal DurchschnittlicheAnzahlArtikelProBestellung()
         {
-            int anzahlBestellungen = logistiksystem.AnzahlBestellungen();
+            int anzahlBestellungen = _logistiksystem.AnzahlBestellungen();
 
             if (anzahlBestellungen != 0)
             {
-                return Math.Round((decimal)logistiksystem.AnzahlVerkaufteArtikel() / anzahlBestellungen, 2);
+                return Math.Round((decimal)_logistiksystem.AnzahlVerkaufteArtikel() / anzahlBestellungen, 2);
             }
             else
             { 
@@ -79,7 +84,7 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
         public bool Bestellen(int kundenIdentifikationsnummer, int treuepunkte)
         {
-            Kunde kunde = (Kunde) nutzerservice.GetNutzerByNutzerId(kundenIdentifikationsnummer);
+            Kunde kunde = (Kunde) _nutzerservice.GetNutzerByNutzerId(kundenIdentifikationsnummer);
             Warenkorb warenkorb = GetWarenkorbByKundenId(kundenIdentifikationsnummer);
 
             if (!(kunde.Status is GesperrterKunde) && ((Collection<Artikel>) warenkorb.Artikel).Count  > 0)
@@ -91,20 +96,20 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
                     artikelnummernMitAnzahl.Add(artikel.Artikelnummer, artikel.Anzahl);
                 }
 
-                logistiksystem.BestellungVersenden(artikelnummernMitAnzahl, kunde.Name, kunde.Rechnungsadresse.Postleitzahl, kunde.Rechnungsadresse.Strasse, kunde.Rechnungsadresse.Hausnummer);
+                _logistiksystem.BestellungVersenden(artikelnummernMitAnzahl, kunde.Name, kunde.Rechnungsadresse.Postleitzahl, kunde.Rechnungsadresse.Strasse, kunde.Rechnungsadresse.Hausnummer);
 
                 if (treuepunkte < 0)
                 {
                     treuepunkte = 0;
                 }
 
-                treuepunkte = Math.Min(treuepunkte, Math.Min(kunde.Treuepunkte, (int) (warenkorb.GesamtPreis() / nutzerservice.WertEinesTreuepunktsInEuro())));
+                treuepunkte = Math.Min(treuepunkte, Math.Min(kunde.Treuepunkte, (int) (warenkorb.GesamtPreis() / _nutzerservice.WertEinesTreuepunktsInEuro())));
 
                 kunde.Treuepunkte -= treuepunkte;
-                decimal rechnungsBetrag = warenkorb.GesamtPreis() - nutzerservice.WertEinesTreuepunktsInEuro() * treuepunkte;
-                rechnungssystem.RechnungSenden(rechnungsBetrag, kunde.Name, kunde.Rechnungsadresse.Postleitzahl, kunde.Rechnungsadresse.Strasse, kunde.Rechnungsadresse.Hausnummer, DateTime.Now);
+                decimal rechnungsBetrag = warenkorb.GesamtPreis() - _nutzerservice.WertEinesTreuepunktsInEuro() * treuepunkte;
+                _rechnungssystem.RechnungSenden(rechnungsBetrag, kunde.Name, kunde.Rechnungsadresse.Postleitzahl, kunde.Rechnungsadresse.Strasse, kunde.Rechnungsadresse.Hausnummer, DateTime.Now);
                 kunde.TreuepunkteHinzufuegen(rechnungsBetrag);
-                nutzerservice.KundenDatenSpeichern(kunde);
+                _nutzerservice.KundenDatenSpeichern(kunde);
                 warenkorb.Leeren();
 
                 return true;
@@ -118,7 +123,7 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
         public Artikel GetArtikelByArtikelnummer(int artikelnummer)
         {
             Artikel artikel;
-            DataRow artikelDaten = logistiksystem.GetArtikelDatenByArtikelnummer(artikelnummer);
+            DataRow artikelDaten = _logistiksystem.GetArtikelDatenByArtikelnummer(artikelnummer);
             if ((string)artikelDaten["Artikeltyp"] == Artikeltyp.Buch.ToString())
             {
                 Buch buch = new Buch();
@@ -181,15 +186,15 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
             if (buecher && bluRays)
             { 
-                artikelnummern = logistiksystem.SucheArtikelnummernByTitel(titel);
+                artikelnummern = _logistiksystem.SucheArtikelnummernByTitel(titel);
             }
             else if (buecher)
             { 
-                artikelnummern = logistiksystem.SucheBuchArtikelnummernByTitel(titel);
+                artikelnummern = _logistiksystem.SucheBuchArtikelnummernByTitel(titel);
             }
             else if (bluRays)
             { 
-                artikelnummern = logistiksystem.SucheBluRayArtikelnummernByTitel(titel);
+                artikelnummern = _logistiksystem.SucheBluRayArtikelnummernByTitel(titel);
             }
 
             foreach (int id in artikelnummern)
@@ -208,25 +213,25 @@ namespace BuchShop.Geschaeftslogik.Geschaeftsservices
 
         public void Mahnen(int kundenIdentifikationsnummer, decimal mahnBetrag)
         {
-            Kunde kunde = (Kunde)nutzerservice.GetNutzerByNutzerId(kundenIdentifikationsnummer);
+            Kunde kunde = (Kunde)_nutzerservice.GetNutzerByNutzerId(kundenIdentifikationsnummer);
             decimal mahnGebuehr = kunde.Mahnen(mahnBetrag);
-            rechnungssystem.MahnungSenden(mahnBetrag, mahnGebuehr, kunde.Name, kunde.Rechnungsadresse.Postleitzahl, kunde.Rechnungsadresse.Strasse, kunde.Rechnungsadresse.Hausnummer);
-            nutzerservice.KundenDatenSpeichern(kunde);
+            _rechnungssystem.MahnungSenden(mahnBetrag, mahnGebuehr, kunde.Name, kunde.Rechnungsadresse.Postleitzahl, kunde.Rechnungsadresse.Strasse, kunde.Rechnungsadresse.Hausnummer);
+            _nutzerservice.KundenDatenSpeichern(kunde);
         }
 
         public decimal GesamtSummeMahnGebuehrenPlusBetraege()
         {
-            return Math.Round(rechnungssystem.GesamtSummeMahnGebuehrenPlusBetraegeInEuro(), 2);
+            return Math.Round(_rechnungssystem.GesamtSummeMahnGebuehrenPlusBetraegeInEuro(), 2);
         }
 
         public void SetLogistiksystemZugriff(ILogistiksystemZugriff logistiksystemZugriff)
         {
-            logistiksystem = logistiksystemZugriff;
+            //_logistiksystem = logistiksystemZugriff;
         }
 
         public void SetRechnungssystemZugriff(IRechnungssystemZugriff rechnungssystemZugriff)
         {
-            rechnungssystem = rechnungssystemZugriff;
+           // _rechnungssystem = rechnungssystemZugriff;
         }
 
         public void SetNutzerservice(INutzerservice service)
