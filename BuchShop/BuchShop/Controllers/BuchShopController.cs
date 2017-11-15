@@ -64,15 +64,7 @@ namespace BuchShop.Controllers
             Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
             if (nutzer is Kunde)
             {
-                ViewData["Nutzer"] = "Kunde";
-                ViewData["Treuepunkte"] = ((Kunde)nutzer).Treuepunkte;
-                ViewData["Kundenstatus"] = ((Kunde)nutzer).Status.ToString();
                 ViewData["Artikel"] = _bestellservice.GetWarenkorbArtikelanzahlByKundenId(int.Parse(value));
-            }
-            else if(nutzer is Mitarbeiter)
-            {
-                ViewData["Telefonnummer"] = ((Mitarbeiter)nutzer).Telefonnummer;
-                string telefon = ((Mitarbeiter)nutzer).Telefonnummer;
             }
 
             return View("Startseite", nutzer);

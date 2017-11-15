@@ -6,20 +6,17 @@
 //------------------------------------------------------------------------------
 namespace BuchShop.Geschaeftslogik.Domaenenobjekte
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
+    using System.ComponentModel.DataAnnotations;
 
-	public partial class Artikel
+    public partial class Artikel
 	{
 		public virtual string Titel
 		{
 			get;
 			set;
 		}
-
-		public virtual decimal Preis
+        
+        public virtual decimal Preis
 		{
 			get;
 			set;
