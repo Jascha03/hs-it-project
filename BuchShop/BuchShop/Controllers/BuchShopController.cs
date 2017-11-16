@@ -88,13 +88,16 @@ namespace BuchShop.Controllers
         public IActionResult Artikeldetails(int artikelnummer)
         {
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
+            artikel.Anzahl = 1;
             return View(artikel);
         }
 
-        public IActionResult ArtikelInWarenkorb(Artikel artikel)
+        public IActionResult ArtikelInWarenkorb(int artikelnummer)
         {
+            // bekomme von der View nur die Artikelnummer und nicht den gesamten Artikel, 
+            // da der Wert "Preis" nicht als decimalstelle übergeben wird.
             var value = HttpContext.Session.GetString("Identifikationsnummer");
-           
+            Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
             _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, artikel.Anzahl, int.Parse(value));
             return View("Warenkorbansicht", artikel);
         }

@@ -15,7 +15,7 @@ namespace BuchShop.Geschaeftslogik.Domaenenobjekte
 			get;
 			set;
 		}
-        
+
         public virtual decimal Preis
 		{
 			get;
