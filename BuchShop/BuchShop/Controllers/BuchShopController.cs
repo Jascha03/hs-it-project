@@ -88,23 +88,20 @@ namespace BuchShop.Controllers
         public IActionResult Artikeldetails(int artikelnummer)
         {
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
-
-            if(artikel is Buch)
-            {
-                ViewData["Autor"] = ((Buch)artikel).Autor;
-                ViewData["Autor"] = ((Buch)artikel).Zusammenfassung;
-            }
-            else if(artikel is BluRay)
-            {
-                ViewData["Autor"] = ((BluRay)artikel).Regisseur;
-                ViewData["Autor"] = ((BluRay)artikel).TrailerLink;
-            }
-
             return View(artikel);
         }
 
-        public IActionResult Warenkorbansicht()
+        public IActionResult ArtikelInWarenkorb(Artikel artikel)
         {
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+           
+            _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, artikel.Anzahl, int.Parse(value));
+            return View("Warenkorbansicht", artikel);
+        }
+
+        public IActionResult Warenkorbansicht(Artikel artikel)
+        {
+            
             return View();
         }
 

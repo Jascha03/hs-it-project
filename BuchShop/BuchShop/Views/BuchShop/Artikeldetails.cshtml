@@ -14,37 +14,42 @@
             Informationen zum ausgewählten Artikel:
         </h4>
     </div>
-    <form asp-action="Warenkorbansicht">
+    <form asp-action="ArtikelInWarenkorb" method="get">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <br />
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Artikelnummer: </label>
                 <label style="color:blue;">@Model.Artikelnummer</label>
+                <input asp-for="Artikelnummer" type="hidden" value="@Model.Artikelnummer" />
             </h4>
         </div>
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Titel: </label>
                 <label style="color:blue;">@Model.Titel</label>
+                <input asp-for="Titel" type="hidden" value="@Model.Titel" />
             </h4>
         </div>
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Typ: </label>
                 <label style="color:blue;">@Model.Typ</label>
+                <input asp-for="Typ" type="hidden" value="@Model.Typ" />
             </h4>
         </div>
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Preis: </label>
                 <label style="color:blue;">@Model.Preis</label>
+                <input asp-for="Preis" type="hidden" value="@Model.Preis" />
             </h4>
         </div>
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Anzahl: </label>
                 <label style="color:blue;">@Model.Anzahl</label>
+                <input asp-for="Anzahl" type="hidden" value="@Model.Anzahl" />
             </h4>
         </div>
         @if (Model is BluRay)
@@ -71,7 +76,7 @@
         <br />
         <div class="form-group">
             <input type="button" value="Zurück zur Suche" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "BuchShop") + "'");" />
-            <input type="submit" value="In den Warenkorb" class="btn btn-default" />
+            <input type="submit" value="In den Warenkorb" class="btn btn-default"/>
         </div>
     </form>
 
