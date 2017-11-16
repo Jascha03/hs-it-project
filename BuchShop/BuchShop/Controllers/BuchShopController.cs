@@ -87,8 +87,12 @@ namespace BuchShop.Controllers
 
         public IActionResult Artikeldetails(int artikelnummer)
         {
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+            if (string.IsNullOrEmpty(value))
+            {
+                return View("Login");
+            }
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
-            artikel.Anzahl = 1;
             return View(artikel);
         }
 
@@ -97,9 +101,37 @@ namespace BuchShop.Controllers
             // bekomme von der View nur die Artikelnummer und nicht den gesamten Artikel, 
             // da der Wert "Preis" nicht als decimalstelle übergeben wird.
             var value = HttpContext.Session.GetString("Identifikationsnummer");
+            if (string.IsNullOrEmpty(value))
+            {
+                return View("Login");
+            }
+            Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
-            _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, artikel.Anzahl, int.Parse(value));
-            return View("Warenkorbansicht", artikel);
+            _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, 1, int.Parse(value));
+            Warenkorb warenkorb = _bestellservice.GetWarenkorbByKundenId((int.Parse(value)));
+            ViewData["Nutzer"] = nutzer;
+            ViewData["Warenkorb"] = warenkorb;
+            ViewData["Rabatwert"] = _bestellservice.GetWarenkorbRabattByKundenId(int.Parse(value));
+            ViewData["Preiswert"] = _bestellservice.GetWarenkorbGesamtpreisByKundenId(int.Parse(value));
+            return View("Warenkorbansicht");
+        }
+        
+        public ActionResult RabattcodeSpeichern(int Rabattcode)
+        {
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+            _bestellservice.RabattcodeSpeichern(int.Parse(value), Rabattcode.ToString());
+            
+            try
+            {
+                return Json(new
+                {
+                    msg = "Successfully added " + Rabattcode
+                });
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public IActionResult Warenkorbansicht(Artikel artikel)
@@ -107,6 +139,8 @@ namespace BuchShop.Controllers
             
             return View();
         }
+
+
 
         public IActionResult Kundensuche()
         {

@@ -4,7 +4,38 @@
     ViewData["Title"] = "Warenkorbansicht";
 }
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $("#btnRabattcodeSpeichern").click(function () {
+            $.ajax(
+                { 
+                    type: "GET", //HTTP POST Method
+                    url: "/BuchShop/RabattcodeSpeichern", // Controller/View
+                    data: { //Passing data
+                        Rabattcode: $("#rabattcode").val() //Reading text box values using Jquery
+                    },
+                    success: function (data) {
+                        alert(data.msg);
+                    },
+                    error: function () {
+                        alert("Ein Fehler ist aufgetreten")
+                    }
+                   
+                });
+
+        });
+    });
+
+</script> 
+
 <h2>@ViewData["Title"]</h2>
+@{
+    var warenkorb = (Warenkorb)ViewData["Warenkorb"];
+    var nutzer = (Nutzer)ViewData["Nutzer"];
+}
 <html>
 <head>
     <title></title>
@@ -12,10 +43,50 @@
 <body>
     <div>
         <h4>
-            @Model.Preis
+            @nutzer.Name hat folgende Artikel in seinem Warenkorb:
         </h4>
     </div>
+    <div class="panel-body">
+        <table id="assets-data-table"
+               class="table table-striped table-bordered"
+               style="width:100%">
+            <thead>
+                <tr>
+                    <th>Titel</th>
+                    <th>Typ</th>
+                    <th>Preis in €</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var artikel in warenkorb.Artikel)
+                {
+                    <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "BuchShop", new { artikelnummer = artikel.Artikelnummer }))'">
+                        <td>@artikel.Titel</td>
+                        <td>@artikel.Typ</td>
+                        <td>@artikel.Preis</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
     <br />
+    <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
+
+        <div class="form-group">
+            <label asp-for="@warenkorb.Rabattcode" class="control-label">Rabattcode: </label>
+            <input asp-for="@warenkorb.Rabattcode" class="form-control" id="rabattcode" />
+        </div>
+        <div class="form-group">
+            <input id="btnRabattcodeSpeichern" type="button" value="Rabattcode speichern" class="btn btn-default" />
+        </div>
+    </div>
+    <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
+        <h4>
+            <label style="width:200px">Rabatt: </label>
+            <label style="color:greenyellow;">@ViewData["Rabatwert"] €</label>
+        </h4>
+    </div>
+
 
 </body>
 </html>
