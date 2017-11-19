@@ -96,31 +96,34 @@ namespace BuchShop.Controllers
             return View(artikel);
         }
 
-        public IActionResult ArtikelInWarenkorb(int artikelnummer)
+        public void ArtikelInWarenkorb(int artikelnummer, int Rabattcode = 0)
         {
             // bekomme von der View nur die Artikelnummer und nicht den gesamten Artikel, 
             // da der Wert "Preis" nicht als decimalstelle übergeben wird.
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                return View("Login");
+                Response.Redirect("Login", true);
             }
-            Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
-            Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
-            _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, 1, int.Parse(value));
-            Warenkorb warenkorb = _bestellservice.GetWarenkorbByKundenId((int.Parse(value)));
-            ViewData["Nutzer"] = nutzer;
-            ViewData["Warenkorb"] = warenkorb;
-            ViewData["Rabatwert"] = _bestellservice.GetWarenkorbRabattByKundenId(int.Parse(value));
-            ViewData["Preiswert"] = _bestellservice.GetWarenkorbGesamtpreisByKundenId(int.Parse(value));
-            return View("Warenkorbansicht");
+            if (Rabattcode == 0)
+            {
+
+                Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
+                _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, 1, int.Parse(value));
+            }
+            else
+            {
+                _bestellservice.RabattcodeSpeichern(int.Parse(value), Rabattcode.ToString());
+            }
+
+            Response.Redirect("Warenkorbansicht", true);
         }
         
         public ActionResult RabattcodeSpeichern(int Rabattcode)
         {
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             _bestellservice.RabattcodeSpeichern(int.Parse(value), Rabattcode.ToString());
-            
+
             try
             {
                 return Json(new
@@ -134,17 +137,64 @@ namespace BuchShop.Controllers
             }
         }
 
-        public IActionResult Warenkorbansicht(Artikel artikel)
+        public IActionResult Warenkorbansicht()
         {
-            
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+            if (string.IsNullOrEmpty(value))
+            {
+                Response.Redirect("Login", true);
+            }
+            Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
+            Warenkorb warenkorb = _bestellservice.GetWarenkorbByKundenId((int.Parse(value)));
+            ViewData["Nutzer"] = nutzer;
+            ViewData["Warenkorb"] = warenkorb;
+            ViewData["Rabatwert"] = _bestellservice.GetWarenkorbRabattByKundenId(int.Parse(value));
+            ViewData["Versandkosten"] = _bestellservice.Versandkosten();
+            ViewData["Preiswert"] = _bestellservice.GetWarenkorbGesamtpreisByKundenId(int.Parse(value));
+            ViewData["TreuepunktWert"] = _nutzerservice.WertEinesTreuepunktsInEuro();
             return View();
         }
 
+        public void Bestellen(int treuepunkte)
+        {
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+            bool erfolgreich = _bestellservice.Bestellen(int.Parse(value), treuepunkte);
 
+            if (erfolgreich)
+            {
+                Response.Redirect("Startseite", true);
+            }
+            else
+            {
+                //TODO: error message
+            }
+        }
+         // Mitarbeiter Loggin
 
         public IActionResult Kundensuche()
         {
             return View();
+        }
+        [HttpPost]
+        public IActionResult Kundensuche(string kundenName)
+        {
+            System.Collections.ObjectModel.Collection<Kunde> kundenListe = _nutzerservice.SucheKundenByName(kundenName);
+            ViewData["Kunden"] = kundenListe;
+            return View();
+        }
+
+
+        public IActionResult Kundendetails(int id)
+        {
+            Kunde kunde = (Kunde)_nutzerservice.GetNutzerByNutzerId(id);
+            return View(kunde);
+        }
+        public IActionResult Mahnen(int id)
+        {
+            //TODO Besser mit Ajax 
+            Kunde kunde = (Kunde)_nutzerservice.GetNutzerByNutzerId(id);
+            _bestellservice.Mahnen(id)
+            return View(kunde);
         }
 
         public IActionResult Bestellstatistik()

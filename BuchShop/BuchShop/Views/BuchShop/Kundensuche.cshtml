@@ -1,0 +1,54 @@
+﻿@model BuchShop.Geschaeftslogik.Domaenenobjekte.Kunde
+@{
+    ViewData["Title"] = "Kundensuche";
+}
+
+<h2>@ViewData["Title"]</h2>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <form asp-action="Kundensuche">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" name="kundenName" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Suchen" class="btn btn-default" />
+        </div>
+        @if (ViewData.ContainsKey("Kunden"))
+        {
+            <div class="panel-body">
+                <table id="assets-data-table"
+                       class="table table-striped table-bordered"
+                       style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Kundenstatus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var kunde in (System.Collections.ObjectModel.Collection
+                <BuchShop.Geschaeftslogik.Domaenenobjekte.Kunde>
+                    )ViewData["Kunden"])
+                        {
+                            <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Kundendetails", "BuchShop", new { id = kunde.Identifikationsnummer }))'">
+                                <td>@kunde.Identifikationsnummer</td>
+                                <td>@kunde.Name</td>
+                                <td>@kunde.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </form>
+</body>
+</html>

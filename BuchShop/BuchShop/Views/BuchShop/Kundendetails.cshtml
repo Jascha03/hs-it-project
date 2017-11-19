@@ -1,0 +1,59 @@
+﻿@model BuchShop.Geschaeftslogik.Domaenenobjekte.Kunde
+    @{
+        ViewData["Title"] = "Kundendetails";
+    }
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $("#btnMahnen").click(function () {
+
+
+            var DTO = JSON.stringify(warenkorb);
+            $.ajax(
+                {
+                    type: "GET", //HTTP POST Method
+                    url: "/BuchShop/RabattcodeSpeichern", // Controller/View
+                    contentType: 'application/json; charset=utf-8',
+                    data: DTO, //Reading text box values using Jquery
+                    dataType: "json",
+                    success: function (data) {
+                        alert(data.msg);
+                    },
+                    error: function () {
+                        alert("Ein Fehler ist aufgetreten")
+                    }
+                });
+
+        });
+    });
+</script> 
+
+    <h2>@ViewData["Title"]</h2>
+    <html>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <div>
+            <h4>
+                Informationen zum ausgewählten Kunden @Model.Name:
+            </h4>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <br />
+        <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
+            <h4>
+                <label style="width:200px">Mahnbetrag in Euro: </label>
+                <input class="form-control" name="mahnbetrag" />
+            </h4>
+        </div>
+        <div class="form-group">
+            <input type="button" id="btnMahnen" value="Mahnen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Mahnen", "BuchShop", new { id = Model.Identifikationsnummer }) + "'");" />
+            <input type="button" value="Entsperren" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Entsperren", "BuchShop", new { id = Model.Identifikationsnummer }) + "'");" />
+            <input type="button" value="Vip Upgrade" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("VipUpgrade", "BuchShop", new { id = Model.Identifikationsnummer }) + "'");" />
+        </div>
+    </body>
+    </html>
