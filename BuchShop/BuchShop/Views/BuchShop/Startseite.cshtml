@@ -17,18 +17,25 @@
     @if (Model is Kunde)
     {
         <div class="form-group" style="border-bottom:solid; border-width: 1px; width:280px">
-            <h4><label style="width:200px">Treuepunkte: </label> 
+            <h4><label style="width:300px">Treuepunkte: </label> 
             <label style="color:greenyellow;">@((Model as Kunde).Treuepunkte)</label></h4>
        </div>
         <div class="form-group" style="border-bottom:solid; border-width: 1px; width: 280px">
             <h4>
-                <label style="width:200px">Kundenstatus: </label>
-                <label style="color:greenyellow;">@((Model as Kunde).Status)</label>
+                <label style="width:300px">Kundenstatus: </label>
+                @if (((Model as Kunde).Status.ToString()) == "Gesperrt")
+                {
+                    <label style="color:red;">@((Model as Kunde).Status)</label>
+                }
+                else
+                {
+                    <label style="color:greenyellow;">@((Model as Kunde).Status)</label>
+                }
             </h4>
         </div>
         <div class="form-group">
             <h4>
-                <label style="width:200px">Artikel im Warenkorb: </label>
+                <label style="width:300px">Artikel im Warenkorb: </label><br/>
                 <label style="color:greenyellow;">@ViewData["artikel"]</label>
             </h4>
         </div>
@@ -42,7 +49,7 @@
     {
         <div class="form-group">
             <h4>
-                <label style="width:150px">Telefonnummer: </label>
+                <label style="width:150px">Telefonnummer: </label><br />
                 <label style="color:greenyellow;">@((Model as Mitarbeiter).Telefonnummer)</label>
             </h4>
         </div>

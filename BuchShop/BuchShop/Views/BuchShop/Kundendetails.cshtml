@@ -10,23 +10,61 @@
     $(document).ready(function () {
         $("#btnMahnen").click(function () {
 
-
-            var DTO = JSON.stringify(warenkorb);
             $.ajax(
                 {
                     type: "GET", //HTTP POST Method
-                    url: "/BuchShop/RabattcodeSpeichern", // Controller/View
+                    url: "/BuchShop/Mahnen", // Controller/View
                     contentType: 'application/json; charset=utf-8',
-                    data: DTO, //Reading text box values using Jquery
-                    dataType: "json",
-                    success: function (data) {
-                        alert(data.msg);
-                    },
-                    error: function () {
-                        alert("Ein Fehler ist aufgetreten")
-                    }
-                });
+                    data: { //Reading text box values using Jquery
+                        id: @Model.Identifikationsnummer,
+                    mahnbetrag: $("#idMahnbetrag").val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    alert("Erfolgreich ermahnt");
+                },
+                error: function () {
+                    alert("Ein Fehler ist aufgetreten")
+                }
+            });
+        });
+        $("#btnEntsperren").click(function () {
 
+            $.ajax(
+            {
+                type: "GET", //HTTP POST Method
+                url: "/BuchShop/Entsperren", // Controller/View
+                contentType: 'application/json; charset=utf-8',
+                data: { //Reading text box values using Jquery
+                    id: @Model.Identifikationsnummer
+                },
+                dataType: "json",
+                success: function (data) {
+                    alert("Erfolgreich Entsperrt");
+                },
+                error: function () {
+                    alert("Ein Fehler ist aufgetreten")
+                }
+            });
+        });
+        $("#btnVipUpgrade").click(function () {
+
+            $.ajax(
+            {
+                type: "GET", //HTTP POST Method
+                url: "/BuchShop/VipUgrade", // Controller/View
+                contentType: 'application/json; charset=utf-8',
+                data: { //Reading text box values using Jquery
+                    id: @Model.Identifikationsnummer
+                },
+                dataType: "json",
+                success: function (data) {
+                    alert("Erfolgreich befördert");
+                },
+                error: function () {
+                    alert("Ein Fehler ist aufgetreten")
+                }
+            });
         });
     });
 </script> 
@@ -47,13 +85,13 @@
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
                 <label style="width:200px">Mahnbetrag in Euro: </label>
-                <input class="form-control" name="mahnbetrag" />
+                <input class="form-control" id="idMahnbetrag" name="mahnbetrag" />
             </h4>
         </div>
         <div class="form-group">
-            <input type="button" id="btnMahnen" value="Mahnen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Mahnen", "BuchShop", new { id = Model.Identifikationsnummer }) + "'");" />
-            <input type="button" value="Entsperren" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Entsperren", "BuchShop", new { id = Model.Identifikationsnummer }) + "'");" />
-            <input type="button" value="Vip Upgrade" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("VipUpgrade", "BuchShop", new { id = Model.Identifikationsnummer }) + "'");" />
+            <input type="button" id="btnMahnen" value="Mahnen" class="btn btn-default"/>
+            <input type="button" id="btnEntsperren" value="Entsperren" class="btn btn-default"/>
+            <input type="button" id="btnVipUpgrade" value="Vip Upgrade" class="btn btn-default"/>
         </div>
     </body>
     </html>

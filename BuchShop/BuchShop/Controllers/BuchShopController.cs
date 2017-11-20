@@ -175,6 +175,7 @@ namespace BuchShop.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public IActionResult Kundensuche(string kundenName)
         {
@@ -183,23 +184,39 @@ namespace BuchShop.Controllers
             return View();
         }
 
-
         public IActionResult Kundendetails(int id)
         {
             Kunde kunde = (Kunde)_nutzerservice.GetNutzerByNutzerId(id);
             return View(kunde);
         }
-        public IActionResult Mahnen(int id)
+        public ActionResult Mahnen(int id, decimal mahnbetrag)
         {
             //TODO Besser mit Ajax 
-            Kunde kunde = (Kunde)_nutzerservice.GetNutzerByNutzerId(id);
-            _bestellservice.Mahnen(id)
-            return View(kunde);
+            _bestellservice.Mahnen(id, mahnbetrag);
+            return Json("Kunden erfolgreich Ermahnt");
+        }
+        public ActionResult Entsperren(int id, decimal mahnbetrag)
+        {
+            //TODO Besser mit Ajax 
+            _nutzerservice.Entsperren(id);
+            return Json("Kunden erfolgreich Entsperrt");
+        }
+        public ActionResult VipUgrade(int id, decimal mahnbetrag)
+        {
+            //TODO Besser mit Ajax 
+            _nutzerservice.VipUpgrade(id);
+            return Json("Kunden erfolgreich zum Vip befördert");
         }
 
         public IActionResult Bestellstatistik()
         {
+            ViewData["Artikelanzahl"] = _bestellservice.AnzahlUnterschiedlicheArtikelInLogistiksystem();
+            ViewData["Bestellungsanzahl"] = _bestellservice.AnzahlBestellungen();
+            ViewData["ArtikelanzahlProBestellung"] = _bestellservice.DurchschnittlicheAnzahlArtikelProBestellung();
+            ViewData["GesamteMahngebuehren"] = _bestellservice.GesamtSummeMahnGebuehrenPlusBetraege();
+
             return View();
         }
+        
     }
 }
