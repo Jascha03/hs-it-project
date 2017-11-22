@@ -43,12 +43,13 @@ namespace BuchShop.Controllers
             string email = nutzer.Email;
             nutzer.Identifikationsnummer = 
                 _nutzerservice.GetNutzerIdentifikationsnummerByEmail(email);
-            
-            if(nutzer.Identifikationsnummer != 0)
             {
-            Response.Redirect("Startseite", true);
-            HttpContext.Session.SetString(
-                "Identifikationsnummer", nutzer.Identifikationsnummer.ToString());
+                if (nutzer.Identifikationsnummer != 0)
+                {
+                    HttpContext.Session.SetString(
+                        "Identifikationsnummer", nutzer.Identifikationsnummer.ToString());
+                    return RedirectToAction("Startseite", true);
+                }
             }
             ModelState.AddModelError("Ungültig", "Email und/oder Passwort falsch");
             return View();
@@ -59,7 +60,7 @@ namespace BuchShop.Controllers
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                return View("Login");
+                return RedirectToAction("Login", true);
             }
             Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
             if (nutzer is Kunde)
@@ -75,7 +76,7 @@ namespace BuchShop.Controllers
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                Response.Redirect("Login", true);
+                RedirectToAction("Login", true);
             }
             if (!string.IsNullOrEmpty(artikelName))
             {
@@ -90,55 +91,38 @@ namespace BuchShop.Controllers
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                return View("Login");
+                return RedirectToAction("Login", true);
             }
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
             return View(artikel);
         }
 
-        public void ArtikelInWarenkorb(int artikelnummer, int Rabattcode = 0)
+        public IActionResult ArtikelInWarenkorb(int artikelnummer)
         {
             // bekomme von der View nur die Artikelnummer und nicht den gesamten Artikel, 
             // da der Wert "Preis" nicht als decimalstelle übergeben wird.
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                Response.Redirect("Login", true);
+                return RedirectToAction("Login", true);
             }
-            if (Rabattcode == 0)
-            {
+            Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
+            _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, 1, int.Parse(value));
 
-                Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
-                _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, 1, int.Parse(value));
-            }
-            else
-            {
-                _bestellservice.RabattcodeSpeichern(int.Parse(value), Rabattcode.ToString());
-            }
-
-            Response.Redirect("Warenkorbansicht", true);
+            return RedirectToAction("Warenkorbansicht", true);
         }
         
-        public ActionResult RabattcodeSpeichern(int Rabattcode)
+        public IActionResult RabattcodeSpeichern(int Rabattcode)
         {
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             _bestellservice.RabattcodeSpeichern(int.Parse(value), Rabattcode.ToString());
-
-            try
-            {
-                return Json(new
-                {
-                    msg = "Successfully added " + Rabattcode
-                });
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
+            return RedirectToAction("Warenkorbansicht", new { Rabattcode = true });
         }
 
-        public IActionResult Warenkorbansicht()
+        public IActionResult Warenkorbansicht(bool Rabattcode = false, bool NutzerValid = true)
         {
+            ViewData["Rabattcode"] = Rabattcode;
+            
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
@@ -146,13 +130,34 @@ namespace BuchShop.Controllers
             }
             Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
             Warenkorb warenkorb = _bestellservice.GetWarenkorbByKundenId((int.Parse(value)));
+            if(!NutzerValid)
+            {
+                ModelState.AddModelError("Gesperrt", "Gesperrter Account - Bestellen nicht möglicht");
+            }
             ViewData["Nutzer"] = nutzer;
             ViewData["Warenkorb"] = warenkorb;
             ViewData["Rabatwert"] = _bestellservice.GetWarenkorbRabattByKundenId(int.Parse(value));
             ViewData["Versandkosten"] = _bestellservice.Versandkosten();
             ViewData["Preiswert"] = _bestellservice.GetWarenkorbGesamtpreisByKundenId(int.Parse(value));
             ViewData["TreuepunktWert"] = _nutzerservice.WertEinesTreuepunktsInEuro();
-            return View();
+            ViewBag.A = "B";
+            return View();      
+        }
+
+        [HttpPost]
+        public IActionResult Warenkorbansicht(int treuepunkte)
+        {
+            var value = HttpContext.Session.GetString("Identifikationsnummer");
+            bool erfolgreich = _bestellservice.Bestellen(int.Parse(value), treuepunkte);
+
+            if (erfolgreich)
+            {
+                return RedirectToAction("Startseite", true);
+            }
+            else
+            {
+                return RedirectToAction("Warenkorbansicht", new { NutzerValid = false });
+            }
         }
 
         public void Bestellen(int treuepunkte)
@@ -166,13 +171,15 @@ namespace BuchShop.Controllers
             }
             else
             {
+                ModelState.AddModelError("Gesperrt", "Gesperrter Account - Bestellen nicht möglicht");
+                Response.Redirect("Warenkorbansicht", true);
                 //TODO: error message
             }
         }
          // Mitarbeiter Loggin
 
         public IActionResult Kundensuche()
-        {
+        { 
             return View();
         }
 
@@ -191,19 +198,16 @@ namespace BuchShop.Controllers
         }
         public ActionResult Mahnen(int id, decimal mahnbetrag)
         {
-            //TODO Besser mit Ajax 
             _bestellservice.Mahnen(id, mahnbetrag);
             return Json("Kunden erfolgreich Ermahnt");
         }
         public ActionResult Entsperren(int id, decimal mahnbetrag)
         {
-            //TODO Besser mit Ajax 
             _nutzerservice.Entsperren(id);
             return Json("Kunden erfolgreich Entsperrt");
         }
         public ActionResult VipUgrade(int id, decimal mahnbetrag)
         {
-            //TODO Besser mit Ajax 
             _nutzerservice.VipUpgrade(id);
             return Json("Kunden erfolgreich zum Vip befördert");
         }
@@ -218,5 +222,11 @@ namespace BuchShop.Controllers
             return View();
         }
         
+        public IActionResult Logout()
+        {
+            HttpContext.Session.SetString(
+                "Identifikationsnummer", "0");
+            return RedirectToAction("Login", true);
+        }
     }
 }

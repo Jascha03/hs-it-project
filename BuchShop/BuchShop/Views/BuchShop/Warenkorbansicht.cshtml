@@ -2,34 +2,7 @@
 
 @{
     ViewData["Title"] = "Warenkorbansicht";
-}
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
-<script>/*
-    $(document).ready(function () {
-        $("#btnRabattcodeSpeichern").click(function () {
-
-            
-            var DTO = JSON.stringify(warenkorb);
-            $.ajax(
-                { 
-                    type: "GET", //HTTP POST Method
-                    url: "/BuchShop/RabattcodeSpeichern", // Controller/View
-                    contentType: 'application/json; charset=utf-8',
-                    data: DTO, //Reading text box values using Jquery
-                    dataType: "json",
-                    success: function (data) {
-                        alert(data.msg);
-                    },
-                    error: function () {
-                        alert("Ein Fehler ist aufgetreten")
-                    }
-                });
-            
-        });
-    });*/
-</script> 
+} 
 
 <h2>@ViewData["Title"]</h2>
 @{
@@ -56,7 +29,7 @@
                     <tr>
                         <th>Titel</th>
                         <th>Typ</th>
-                        <th>Preis in €</th>
+                        <th>Preis</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,7 +38,7 @@
                         <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "BuchShop", new { artikelnummer = artikel.Artikelnummer }))'">
                             <td>@artikel.Titel</td>
                             <td>@artikel.Typ</td>
-                            <td>@artikel.Preis</td>
+                            <td>@artikel.Preis €</td>
                         </tr>
                     }
                 </tbody>
@@ -73,15 +46,23 @@
         </div>
         <br />
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
-            <form asp-action="ArtikelInWarenkorb" method="get">
-                <div class="form-group">
-                    <label asp-for="Rabattcode" class="control-label">Rabattcode: </label>
-                    <input asp-for="Rabattcode" class="form-control" id="RabCode" />
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Rabattcode Speichern" class="btn btn-default" />
-                </div>
-            </form>
+            @{if ((bool)ViewData["Rabattcode"])
+              {
+                  <label style="color:green">Rabattcode Eingabe erfolgreich</label>
+              }
+              else
+              {
+              <form asp-action="RabattcodeSpeichern" method="get">
+                  <div class="form-group">
+                      <label asp-for="Rabattcode" class="control-label">Rabattcode: </label>
+                      <input asp-for="Rabattcode" class="form-control" id="RabCode" />
+                  </div>
+                  <div class="form-group">
+                      <input type="submit" value="Rabattcode Speichern" class="btn btn-default" />
+                  </div>
+              </form>
+                  }
+              }
         </div>
         <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
             <h4>
@@ -101,7 +82,7 @@
                 <label style="color:greenyellow;" id="RabWert">@ViewData["Preiswert"] €</label>
             </h4>
         </div>
-        <form asp-action="Bestellen" method="get">
+        <form asp-action="Warenkorbansicht" method="post">
             <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
                 <div class="form-group">
                     <label class="control-label">Treuepunkte einlösen: </label>
@@ -111,6 +92,11 @@
             <div class="form-group">
                 <input type="button" value="Weitersuchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "BuchShop") + "'");" />
                 <input type="submit" value="Bestellen" class="btn btn-default" />
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <br />
+                    <span style="color: red">@ViewData.ModelState["Gesperrt"].Errors[0].ErrorMessage</span>
+                }
             </div>
         </form>
     } else {

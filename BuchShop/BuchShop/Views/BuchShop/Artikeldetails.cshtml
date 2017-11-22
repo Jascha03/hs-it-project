@@ -63,14 +63,18 @@
         else if (Model is Buch)
         {
             <div class="form-group">
-                <h4>
-                    <label style="width:200px">Autor: </label>
-                    <label style="color:blue;">@((Model as Buch).Autor)</label>
-                </h4>
-                <h4>
-                    <label style="width:200px">Zusammenfassung: </label>
-                    <label style="color:blue;">@((Model as Buch).Zusammenfassung)</label>
-                </h4>
+                <div class="form-group" style="border-bottom:solid; border-width: 2px; border-color:gray; width:280px">
+                    <h4>
+                        <label style="width:200px">Autor: </label> <br />
+                        <label style="color:blue;">@((Model as Buch).Autor)</label>
+                    </h4>
+                </div>
+                <div>
+                    <h4>
+                        <label style="width:200px">Zusammenfassung: </label> <br />
+                        <label style="color:blue;">@((Model as Buch).Zusammenfassung)</label>
+                    </h4>
+                </div>
             </div>
         }
         <br />

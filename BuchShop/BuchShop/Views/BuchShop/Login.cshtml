@@ -29,7 +29,7 @@
         </div>
         @if (!ViewData.ModelState.IsValid)
         {
-            <span>@ViewData.ModelState["Ungültig"].Errors[0].ErrorMessage</span>
+            <span style="color: red">@ViewData.ModelState["Ungültig"].Errors[0].ErrorMessage</span>
         }
     </form>
 </body>

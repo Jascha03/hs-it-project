@@ -40,7 +40,7 @@
                         <tr>
                             <th>Titel</th>
                             <th>Typ</th>
-                            <th>Preis in €</th>
+                            <th>Preis</th>
                         </tr>
                     </thead>
                     <tbody>                        
@@ -51,7 +51,7 @@
                             <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "BuchShop", new { artikelnummer = artikel.Artikelnummer }))'">
                                 <td>@artikel.Titel</td>
                                 <td>@artikel.Typ</td>
-                                <td>@artikel.Preis</td>
+                                <td>@artikel.Preis €</td>
                             </tr>
                             }
                     </tbody>
