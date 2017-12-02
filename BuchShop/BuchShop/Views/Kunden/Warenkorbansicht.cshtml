@@ -21,7 +21,7 @@
     </div>
     @if (((ICollection<Artikel>)warenkorb.Artikel).Count != 0)
     {
-        <div class="panel-body">
+        <div class="panel-body divLine">
             <table id="assets-data-table"
                    class="table table-striped table-bordered"
                    style="width:100%">
@@ -35,7 +35,7 @@
                 <tbody>
                     @foreach (var artikel in warenkorb.Artikel)
                     {
-                        <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "BuchShop", new { artikelnummer = artikel.Artikelnummer }))'">
+                        <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "Kunden", new { artikelnummer = artikel.Artikelnummer }))'">
                             <td>@artikel.Titel</td>
                             <td>@artikel.Typ</td>
                             <td>@artikel.Preis €</td>
@@ -90,7 +90,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="button" value="Weitersuchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "BuchShop") + "'");" />
+                <input type="button" value="Weitersuchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "Kunden") + "'");" />
                 <input type="submit" value="Bestellen" class="btn btn-default" />
                 @if (!ViewData.ModelState.IsValid)
                 {

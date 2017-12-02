@@ -13,7 +13,7 @@
             $.ajax(
                 {
                     type: "GET", //HTTP POST Method
-                    url: "/BuchShop/Mahnen", // Controller/View
+                    url: "/Mitarbeiter/Mahnen", // Controller/View
                     contentType: 'application/json; charset=utf-8',
                     data: { //Reading text box values using Jquery
                         id: @Model.Identifikationsnummer,
@@ -33,7 +33,7 @@
             $.ajax(
             {
                 type: "GET", //HTTP POST Method
-                url: "/BuchShop/Entsperren", // Controller/View
+                url: "/Mitarbeiter/Entsperren", // Controller/View
                 contentType: 'application/json; charset=utf-8',
                 data: { //Reading text box values using Jquery
                     id: @Model.Identifikationsnummer
@@ -52,7 +52,7 @@
             $.ajax(
             {
                 type: "GET", //HTTP POST Method
-                url: "/BuchShop/VipUgrade", // Controller/View
+                url: "/Mitarbeiter/VipUgrade", // Controller/View
                 contentType: 'application/json; charset=utf-8',
                 data: { //Reading text box values using Jquery
                     id: @Model.Identifikationsnummer

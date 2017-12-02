@@ -1,41 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using BuchShop.Models;
+using Microsoft.AspNetCore.Http;
 using BuchShop.Geschaeftslogik.Domaenenobjekte;
-using BuchShop.Datenzugriff;
 using BuchShop.Geschaeftslogik.Geschaeftsservices;
-using BuchShop.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BuchShop.Controllers
 {
-    public class BuchShopController : Controller
+    public class KundenController : Controller
     {
         // private readonly INutzerservice _nutzerservice;
         private IBestellservice _bestellservice;
         private INutzerservice _nutzerservice;
-        public BuchShopController(
+        public KundenController(
             IBestellservice bestellservice, INutzerservice nutzerservice)
         {
             _bestellservice = bestellservice;
             _nutzerservice = nutzerservice;
-        }
-        
-
-        public IActionResult Startseite()
-        {
-            var value = HttpContext.Session.GetString("Identifikationsnummer");
-            if (string.IsNullOrEmpty(value))
-            {
-                return RedirectToAction("Login", "Benutzer", true);
-            }
-            Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
-            if (nutzer is Kunde)
-            {
-                ViewData["Artikel"] = _bestellservice.GetWarenkorbArtikelanzahlByKundenId(int.Parse(value));
-            }
-
-            return View("Startseite", nutzer);
         }
 
         public IActionResult Artikelsuche(string artikelName, bool checkboxBuch, bool checkboxBlueRay)
@@ -43,7 +26,7 @@ namespace BuchShop.Controllers
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
-                RedirectToAction("Login", true);
+                return RedirectToAction("Login", "Benutzer");
             }
             if (!string.IsNullOrEmpty(artikelName))
             {
@@ -76,14 +59,14 @@ namespace BuchShop.Controllers
             Artikel artikel = _bestellservice.GetArtikelByArtikelnummer(artikelnummer);
             _bestellservice.AddArtikelToWarenkorb(artikel.Artikelnummer, 1, int.Parse(value));
 
-            return RedirectToAction("Warenkorbansicht", true);
+            return RedirectToAction("Warenkorbansicht", "Kunden");
         }
-        
+
 
         public IActionResult Warenkorbansicht(bool Rabattcode = false, bool NutzerValid = true)
         {
             ViewData["Rabattcode"] = Rabattcode;
-            
+
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             if (string.IsNullOrEmpty(value))
             {
@@ -91,7 +74,7 @@ namespace BuchShop.Controllers
             }
             Nutzer nutzer = _nutzerservice.GetNutzerByNutzerId(int.Parse(value));
             Warenkorb warenkorb = _bestellservice.GetWarenkorbByKundenId((int.Parse(value)));
-            if(!NutzerValid)
+            if (!NutzerValid)
             {
                 ModelState.AddModelError("Gesperrt", "Gesperrter Account - Bestellen nicht möglicht");
             }
@@ -102,7 +85,7 @@ namespace BuchShop.Controllers
             ViewData["Preiswert"] = _bestellservice.GetWarenkorbGesamtpreisByKundenId(int.Parse(value));
             ViewData["TreuepunktWert"] = _nutzerservice.WertEinesTreuepunktsInEuro();
             ViewBag.A = "B";
-            return View();      
+            return View();
         }
         [HttpPost]
         public IActionResult Warenkorbansicht(int treuepunkte)
@@ -112,18 +95,18 @@ namespace BuchShop.Controllers
 
             if (erfolgreich)
             {
-                return RedirectToAction("Startseite", true);
+                return RedirectToAction("Startseite", "BuchShop");
             }
             else
             {
-                return RedirectToAction("Warenkorbansicht", new { NutzerValid = false });
+                return RedirectToAction("Warenkorbansicht", "Kunden", new { NutzerValid = false });
             }
         }
         public IActionResult RabattcodeSpeichern(int Rabattcode)
         {
             var value = HttpContext.Session.GetString("Identifikationsnummer");
             _bestellservice.RabattcodeSpeichern(int.Parse(value), Rabattcode.ToString());
-            return RedirectToAction("Warenkorbansicht", new { Rabattcode = true });
+            return RedirectToAction("Warenkorbansicht", "Kunden", new { Rabattcode = true });
         }
 
 
@@ -134,65 +117,13 @@ namespace BuchShop.Controllers
 
             if (erfolgreich)
             {
-                return RedirectToAction("Startseite", true);
+                return RedirectToAction("Startseite", "BuchShop");
             }
             else
             {
                 ModelState.AddModelError("Gesperrt", "Gesperrter Account - Bestellen nicht möglicht");
-                return RedirectToAction("Warenkorbansicht", true);
+                return RedirectToAction("Warenkorbansicht", "Kunden");
             }
-        }
-         // Mitarbeiter Loggin
-
-        public IActionResult Kundensuche()
-        { 
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Kundensuche(string kundenName)
-        {
-            System.Collections.ObjectModel.Collection<Kunde> kundenListe = _nutzerservice.SucheKundenByName(kundenName);
-            ViewData["Kunden"] = kundenListe;
-            return View();
-        }
-
-        public IActionResult Kundendetails(int id)
-        {
-            Kunde kunde = (Kunde)_nutzerservice.GetNutzerByNutzerId(id);
-            return View(kunde);
-        }
-        public ActionResult Mahnen(int id, decimal mahnbetrag)
-        {
-            _bestellservice.Mahnen(id, mahnbetrag);
-            return Json("Kunden erfolgreich Ermahnt");
-        }
-        public ActionResult Entsperren(int id, decimal mahnbetrag)
-        {
-            _nutzerservice.Entsperren(id);
-            return Json("Kunden erfolgreich Entsperrt");
-        }
-        public ActionResult VipUgrade(int id, decimal mahnbetrag)
-        {
-            _nutzerservice.VipUpgrade(id);
-            return Json("Kunden erfolgreich zum Vip befördert");
-        }
-
-        public IActionResult Bestellstatistik()
-        {
-            ViewData["Artikelanzahl"] = _bestellservice.AnzahlUnterschiedlicheArtikelInLogistiksystem();
-            ViewData["Bestellungsanzahl"] = _bestellservice.AnzahlBestellungen();
-            ViewData["ArtikelanzahlProBestellung"] = _bestellservice.DurchschnittlicheAnzahlArtikelProBestellung();
-            ViewData["GesamteMahngebuehren"] = _bestellservice.GesamtSummeMahnGebuehrenPlusBetraege();
-
-            return View();
-        }
-        
-        public IActionResult Logout()
-        {
-            HttpContext.Session.SetString(
-                "Identifikationsnummer", "0");
-            return RedirectToAction("Login", "Benutzer");
         }
     }
 }

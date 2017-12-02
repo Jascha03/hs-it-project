@@ -48,7 +48,7 @@
                         <BuchShop.Geschaeftslogik.Domaenenobjekte.Artikel>
                             )ViewData["artikel"] )
                             {
-                            <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "BuchShop", new { artikelnummer = artikel.Artikelnummer }))'">
+                            <tr style="cursor: pointer" onclick="location.href = '@(Url.Action("Artikeldetails", "Kunden", new { artikelnummer = artikel.Artikelnummer }))'">
                                 <td>@artikel.Titel</td>
                                 <td>@artikel.Typ</td>
                                 <td>@artikel.Preis €</td>

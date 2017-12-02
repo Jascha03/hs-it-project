@@ -1,0 +1,88 @@
+﻿@model BuchShop.Geschaeftslogik.Domaenenobjekte.Artikel
+@{
+    ViewData["Title"] = "Artikeldetails";
+}
+
+<h2>@ViewData["Title"]</h2>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div>
+        <h4>
+            Informationen zum ausgewählten Artikel:
+        </h4>
+    </div>
+    <form asp-action="ArtikelInWarenkorb" asp-controller="Kunden" method="get">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <br />
+        <div class="form-group lowerdivLine">
+            <h4>
+                <label>Artikelnummer: </label><br />
+                <label class="labelColor">@Model.Artikelnummer</label>
+                <input asp-for="Artikelnummer" type="hidden" value="@Model.Artikelnummer" />
+            </h4>
+        </div>
+        <div class="form-group lowerdivLine">
+            <h4>
+                <label>Titel: </label><br />
+                <label class="labelColor">@Model.Titel</label>
+                <input asp-for="Titel" type="hidden" value="@Model.Titel" />
+            </h4>
+        </div>
+        <div class="form-group lowerdivLine">
+            <h4>
+                <label>Typ: </label><br />
+                <label class="labelColor">@Model.Typ</label>
+                <input asp-for="Typ" type="hidden" value="@Model.Typ" />
+            </h4>
+        </div>
+        <div class="form-group lowerdivLine">
+            <h4>
+                <label>Preis: </label><br />
+                <label class="labelColor">@Model.Preis</label>
+                <input asp-for="Preis" type="hidden" value="@Model.Preis" />
+            </h4>
+        </div>
+        <div class="form-group lowerdivLine">
+            <h4>
+                <label>Anzahl: </label><br />
+                <label class="labelColor">@Model.Anzahl</label>
+                <input asp-for="Anzahl" type="hidden" value="@Model.Anzahl" />
+            </h4>
+        </div>
+        @if (Model is BluRay)
+        {
+            <div class="form-group">
+                <h4>
+                    <a href="@((Model as BluRay).TrailerLink)">Zum Trailer von @Model.Titel</a>
+                </h4>
+            </div>
+        }
+        else if (Model is Buch)
+        {
+            <div class="form-group">
+                <div class="form-group lowerdivLine">
+                    <h4>
+                        <label>Autor: </label> <br />
+                        <label class="labelColor">@((Model as Buch).Autor)</label>
+                    </h4>
+                </div>
+                <div>
+                    <h4>
+                        <label>Zusammenfassung: </label> <br />
+                        <label class="labelColor">@((Model as Buch).Zusammenfassung)</label>
+                    </h4>
+                </div>
+            </div>
+        }
+        <br />
+        <div class="form-group">
+            <input type="button" value="Zurück zur Suche" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "Kunden") + "'");" />
+            <input type="submit" value="In den Warenkorb" class="btn btn-default"/>
+        </div>
+    </form>
+
+</body>
+</html>

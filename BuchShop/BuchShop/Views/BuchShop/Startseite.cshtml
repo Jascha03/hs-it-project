@@ -16,51 +16,51 @@
     <br />
     @if (Model is Kunde)
     {
-        <div class="form-group" style="border-bottom:solid; border-width: 1px; width:280px">
-            <h4><label style="width:300px">Treuepunkte: </label> 
-            <label style="color:greenyellow;">@((Model as Kunde).Treuepunkte)</label></h4>
+        <div class="form-group lowerdivLine">
+            <h4><label>Treuepunkte: </label> <br />
+            <label class="labelColor">@((Model as Kunde).Treuepunkte)</label></h4>
        </div>
-        <div class="form-group" style="border-bottom:solid; border-width: 1px; width: 280px">
+        <div class="form-group lowerdivLine">
             <h4>
-                <label style="width:300px">Kundenstatus: </label>
+                <label>Kundenstatus: </label><br />
                 @if (((Model as Kunde).Status.ToString()) == "Gesperrt")
                 {
-                    <label style="color:red;">@((Model as Kunde).Status)</label>
+                    <label class="labelStateBlocked">@((Model as Kunde).Status)</label>
                 }
                 else
                 {
-                    <label style="color:greenyellow;">@((Model as Kunde).Status)</label>
+                    <label class="labelstateNormal">@((Model as Kunde).Status)</label>
                 }
             </h4>
         </div>
         <div class="form-group">
             <h4>
-                <label style="width:300px">Artikel im Warenkorb: </label><br/>
-                <label style="color:greenyellow;">@ViewData["artikel"]</label>
+                <label>Artikel im Warenkorb: </label><br/>
+                <label class="labelColor">@ViewData["artikel"]</label>
             </h4>
         </div>
         <br />
         <div class="form-group">
-            <input type="button" value="Artikel Suchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "BuchShop") + "'");" />
-            <input type="button" value="Warenkorb bearbeiten" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Warenkorbansicht", "BuchShop") + "'");" />
+            <input type="button" value="Artikel Suchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Artikelsuche", "Kunden") + "'");" />
+            <input type="button" value="Warenkorb bearbeiten" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Warenkorbansicht", "Kunden") + "'");" />
         </div>
     }
     @if (Model is Mitarbeiter)
     {
         <div class="form-group">
             <h4>
-                <label style="width:150px">Telefonnummer: </label><br />
-                <label style="color:greenyellow;">@((Model as Mitarbeiter).Telefonnummer)</label>
+                <label>Telefonnummer: </label><br />
+                <label class="labelColor">@((Model as Mitarbeiter).Telefonnummer)</label>
             </h4>
         </div>
         <br />
         <div class="form-group">
-            <input type="button" value="Kunde suchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Kundensuche", "BuchShop") + "'");" />
-            <input type="button" value="Bestellstatistiken" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Bestellstatistik", "BuchShop") + "'");" />
+            <input type="button" value="Kunde suchen" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Kundensuche", "Mitarbeiter") + "'");" />
+            <input type="button" value="Bestellstatistiken" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Bestellstatistik", "Mitarbeiter") + "'");" />
         </div>
     }
     <div class="form-group">
-        <input type="button" value="Logout" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Logout", "BuchShop") + "'");" />
+        <input type="button" value="Logout" class="btn btn-default" onclick="@("window.location.href='" + @Url.Action("Logout", "Benutzer") + "'");" />
     </div>
 </body>
 </html>

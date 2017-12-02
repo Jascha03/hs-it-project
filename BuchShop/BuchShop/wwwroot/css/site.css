@@ -34,3 +34,33 @@
         display: none;
     }
 }
+
+/* Self defined styles*/
+.lowerdivLine {
+    border-bottom: solid;
+    border-width: 2px;
+    border-color: gray;
+    width: 280px
+}
+
+.lowerdivLineLong {
+    border-bottom: solid;
+    border-width: 2px;
+    border-color: gray;
+    width: 500px; 
+}
+.labelWidth{
+    width: 400px;
+}
+
+.labelColor {
+    color: royalblue;
+}
+
+.labelstateNormal{
+    color: greenyellow;
+}
+
+.labelStateBlocked {
+    color: greenyellow;
+}
